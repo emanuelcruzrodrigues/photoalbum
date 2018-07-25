@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 
+import com.photoalbum.tools.FileNormalizer;
+
 public class AlbumDirectories {
 	
 	private static Map<String, String> directoriesMap = new LinkedHashMap<>();

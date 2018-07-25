@@ -1,4 +1,4 @@
-package com.photoalbum.config;
+package com.photoalbum.tools;
 
 import java.io.File;
 import java.text.Normalizer;

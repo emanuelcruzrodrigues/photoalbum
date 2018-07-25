@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:sec="http://www.sprinfgramework.org/schema/security"
+	th:include="defaultTemplate::full">
+
+<div th:fragment="mainContent">
+
+	<script th:src="@{/js/picture.js}"></script>
+	
+	<img class="img-fluid img-thumbnail" th:alt="${pictureName}" th:title="${pictureName}"  th:src="${picturePath}" />
+	
+	<div class="col-md-4 text-center marginal">
+		
+		<div class="btn-group" role="group">
+			<div class="btn-group mr-2" role="group">
+				<a th:if="${priorPicture} != null" th:href="${priorPicture}" class="btn btn-info" role="button">
+					<span class="glyphicon glyphicon-chevron-left"></span>
+				</a>
+			</div>
+			<div class="btn-group mr-2" role="group">
+				<a th:href="${albumPath}" class="btn btn-info" role="button">
+					<span class="glyphicon glyphicon-th"></span>
+				</a>
+			</div>
+			<div class="btn-group mr-2" role="group">
+				<a th:if="${nextPicture} != null" th:href="${nextPicture}" class="btn btn-info" role="button">
+					<span class="glyphicon glyphicon-chevron-right"></span>
+				</a>
+			</div>
+		</div>
+		
+	</div>
+	
+</div>
+
+
+</html>

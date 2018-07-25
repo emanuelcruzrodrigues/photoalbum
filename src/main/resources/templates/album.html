@@ -27,8 +27,11 @@
 	
 		<th:block th:each="picture : *{pictures}">
 			<li>
-                <img th:alt="${picture.key}"  th:src="${picture.value}">
-                <p th:text="${picture.key}"></p>
+				<div class="marginal">
+					<a th:href="'/picture/' + ${picture.value}">
+                		<img th:alt="${picture.key}"  th:src="${#strings.replace(picture.value,'@','/')}" class="img-thumbnail" style="max-height:200px;height:auto;width:auto;"/>
+					</a>
+				</div>
 			</li>
 		</th:block>
 		
@@ -47,9 +50,9 @@
 	
 	<div class="alert alert-warning" role="alert" th:if="*{folders == null && pictures == null}">
   		Ops ... this folder does not have any images or subfolders
+		<a href="javascript:history.back()" th:if="${activeFolder != '/'}">Go back</a>
 	</div>
 	
-	<a href="javascript:history.back()" th:if="${activeFolder != '/'}">Go back</a>
 	 
 </div>
 
