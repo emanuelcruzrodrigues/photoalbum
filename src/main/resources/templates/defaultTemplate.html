@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:th="http://www.thymeleaf.org" 
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:sec="http://www.sprinfgramework.org/schema/security"
+	th:fragment="full" >
+	
+	<head>
+		<meta charset="utf-8"/>
+		
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<link rel="icon" type="image/x-icon" th:href="@{/images/favicon.png}"/>
+		<link rel="shortcut icon" type="image/x-icon" th:href="@{/images/favicon.png}"/>
+		
+		<!-- jquery -->
+		<script th:src="@{/webjars/jquery/3.2.1/jquery.min.js}"></script>
+		
+		<!-- bootstrap -->
+		<link rel="stylesheet" th:href="@{/webjars/bootstrap/4.0.0/css/bootstrap.min.css}"/>
+		<link rel="stylesheet" th:href="@{/webjars/bootstrap-glyphicons/bdd2cbfba0/css/bootstrap-glyphicons.css}"/>
+		<script th:src="@{/webjars/bootstrap/4.0.0/js/bootstrap.min.js}"></script>
+		
+		<!-- datatables -->
+		<link rel="stylesheet" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}"/>
+		<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+		
+		<!-- default css -->
+		<link rel="stylesheet" th:href="@{/css/defaultTemplate.css}" />
+		
+		<!-- bootstrap photo gallery -->
+		<link rel="stylesheet" th:href="@{/css/jquery.bsPhotoGallery-min.css}" />
+		<script th:src="@{/js/jquery.bsPhotoGallery-min.js}"></script>
+		
+		<title th:text="'Photo Album'"></title>
+		
+	</head>
+
+	<body>
+	
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		<a class="navbar-brand" href="/">
+			<img src="/images/favicon.png" alt="Photo Album" height="40px"/>
+			PhotoAlbum
+		</a>
+		<button class="navbar-toggler" 
+			type="button" 
+			data-toggle="collapse"
+			data-target="#navbarSupportedContent"
+			aria-controls="navbarSupportedContent" 
+			aria-expanded="false"
+			aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+
+		<div class="collapse navbar-collapse" id="navbarSupportedContent" sec:authorize="isAuthenticated()">
+			
+			<ul class="navbar-nav mr-auto">
+				
+				<li class="nav-item">
+					<a class="nav-link"	href="/" th:text="Home"></a>
+				</li>
+				
+			</ul>
+
+			<form id="exitFrm" method="post" th:action="@{/logout}">
+				<div class="btn-toolbar" role="toolbar"
+					aria-label="Toolbar with button groups">
+					<div class="btn-group mr-2" role="group">
+						<button type="submit" class="btn btn-primary" th:text="Exit"></button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</nav>
+	
+	<div class="container">
+	
+		<br/>
+	
+		<div class="mainContent" th:include="this::mainContent"> </div>
+	</div>
+
+	<footer class="footer">
+		<div class="container text-center">
+			<span class="text-muted" th:text="${'Photo Album&#169; ' + @environment.getProperty('release')}"></span>
+		</div>
+	</footer>
+
+</body>
+	
+</html>

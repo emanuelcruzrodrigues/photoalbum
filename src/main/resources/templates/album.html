@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:sec="http://www.sprinfgramework.org/schema/security"
+	th:include="defaultTemplate::full">
+
+<div th:fragment="mainContent">
+
+	<script th:src="@{/js/album.js}"></script>
+	
+	<div th:if="${activeFolder != '/'}" class="alert alert-primary" role="alert" th:text="'Active folder: ' + ${activeFolder}">
+	</div>
+	
+	
+	<div th:if="${activeFolder == '/'}" class="jumbotron">
+	  <h1 class="display-4">Welcome to PhotoAlbum!</h1>
+	  <p class="lead">Start by selecting some folder below and enjoy!</p>
+	  <hr class="my-4">
+	  <p>Developed by Emanuel Cruz Rodrigues</p>
+	  <p class="lead">
+	    <a class="btn btn-primary btn-lg" href="https://github.com/emanuelcruzrodrigues/photoalbum" role="button">Learn more</a>
+	  </p>
+	</div>
+	
+	<ul class="row first" th:if="*{pictures != null}">
+	
+		<th:block th:each="picture : *{pictures}">
+			<li>
+                <img th:alt="${picture.key}"  th:src="${picture.value}">
+                <p th:text="${picture.key}"></p>
+			</li>
+		</th:block>
+		
+	</ul>
+	
+	
+	<div th:if="*{folders != null}" class="alert alert-light" role="alert">
+		<h5>Folders</h5>
+	
+		<ul>
+			<th:block th:each="folder : *{folders}">
+				<li><a th:href="'/folder/' + ${folder.value}"><img src="/images/folder.png" th:text="${folder.key}" height="30px"/></a></li>
+			</th:block>
+		</ul>
+	</div>
+	
+	<div class="alert alert-warning" role="alert" th:if="*{folders == null && pictures == null}">
+  		Ops ... this folder does not have any images or subfolders
+	</div>
+	
+	<a href="javascript:history.back()" th:if="${activeFolder != '/'}">Go back</a>
+	 
+</div>
+
+
+</html>
