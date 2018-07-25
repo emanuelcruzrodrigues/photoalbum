@@ -12,17 +12,6 @@
 	<div th:if="${activeFolder != '/'}" class="alert alert-primary" role="alert" th:text="'Active folder: ' + ${activeFolder}">
 	</div>
 	
-	
-	<div th:if="${activeFolder == '/'}" class="jumbotron">
-	  <h1 class="display-4">Welcome to PhotoAlbum!</h1>
-	  <p class="lead">Start by selecting some folder below and enjoy!</p>
-	  <hr class="my-4">
-	  <p>Developed by Emanuel Cruz Rodrigues</p>
-	  <p class="lead">
-	    <a class="btn btn-primary btn-lg" href="https://github.com/emanuelcruzrodrigues/photoalbum" role="button">Learn more</a>
-	  </p>
-	</div>
-	
 	<ul class="row first" th:if="*{pictures != null}">
 	
 		<th:block th:each="picture : *{pictures}">

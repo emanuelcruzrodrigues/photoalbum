@@ -17,7 +17,10 @@ public class UserService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		return new AppUser(username, password);
+		if (!this.userName.toLowerCase().equals(username.toLowerCase())) {
+			throw new UsernameNotFoundException("User not found!");
+		}
+		return new AppUser(this.userName, password);
 	}
 
 

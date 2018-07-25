@@ -78,12 +78,12 @@ public class AlbumService {
 			
 			if (picture.getName().equals(pictureName)) {
 				if (pictures.size() > i+1) {
-					result[1] = encodePath(label, root, pictures.get(i+1));
+					result[1] = encodePath(label, root, pictures.get(i+1), "_mid");
 				}
 				
 				return result;
 			}else {
-				result[0] = encodePath(label, root, picture);
+				result[0] = encodePath(label, root, picture, "_mid");
 			}
 		}
 		
@@ -127,11 +127,14 @@ public class AlbumService {
 		for (File file : files) {
 			if (!file.isFile()) continue;
 			if (file.getName().startsWith("_thumb")) continue;
+			if (file.getName().startsWith("_mid")) continue;
 			if (!getPictureExtensions().contains(FileUtils.getFileExtension(file).toLowerCase())) continue;
 			
 			if (thumbs) {
 				File thumb = new ImageScaller().scale(file, 400, "_thumb");
+				new ImageScaller().scale(file, 1920, "_mid");
 				if (thumb == null) continue;
+				
 				
 				LogManager.getLogger().info("thumb: " + thumb.getName());
 				result.add(thumb);
@@ -146,7 +149,17 @@ public class AlbumService {
 	}
 	
 	private String encodePath(String label, String root, File file) {
-		String filePath = file.getAbsolutePath().replace("\\", "/").replace(root, "");
+		return encodePath(label, root, file, null);
+	}
+	
+	private String encodePath(String label, String root, File file, String fileNamePreffix) {
+		
+		String fileName = file.getName();
+		if (fileNamePreffix != null) {
+			fileName = fileNamePreffix + fileName;
+		}
+		
+		String filePath = file.getAbsolutePath().replace("\\", "/").replace(root, "").replace(file.getName(), fileName);
 		String url = String.format("../%s%s%s", label, (filePath.startsWith("/") ? "" : "/"), filePath);
 		String encodedUrl = encodePath(url);
 		return encodedUrl;

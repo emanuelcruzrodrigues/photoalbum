@@ -63,14 +63,17 @@ public class AlbumController {
 		}
 		model.addAttribute("albumPath", "/folder/" + albumPath.toString());
 		
-		String picturePath = thumbPath.replace("_thumb", "");
+		String picturePath = thumbPath.replace("_thumb", "_mid");
 		model.addAttribute("picturePath", picturePath);
+		
+		String downloadPath = thumbPath.replace("_thumb", "").replace("_mid", "");
+		model.addAttribute("downloadPath", downloadPath);
 		
 		String[] split = picturePath.split("/");
 		String pictureName = split[split.length-1];
 		model.addAttribute("pictureName", pictureName);
 		
-		String[] priorAndNextPictures = albumService.getPriorAndNextPicturesPaths(albumService.decodePath(albumPath.toString()), pictureName);
+		String[] priorAndNextPictures = albumService.getPriorAndNextPicturesPaths(albumService.decodePath(albumPath.toString()), pictureName.replace("_mid", ""));
 		
 		String priorPicture = priorAndNextPictures[0];
 		if (priorPicture != null) {

@@ -6,7 +6,7 @@
 
 	<groupId>com</groupId>
 	<artifactId>PhotoAlbum</artifactId>
-	<version>0.1</version>
+	<version>0.2</version>
 	<packaging>war</packaging>
 
 	<name>PhotoAlbum</name>
