@@ -1,92 +1,111 @@
 package com.photoalbum.controller;
 
-import java.util.Map;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.photoalbum.service.AlbumService;
+import com.photoalbum.domain.Album;
+import com.photoalbum.domain.AlbumDirectory;
+import com.photoalbum.domain.AlbumPicture;
+import com.photoalbum.service.AlbumInitializer;
 
 @Controller
 public class AlbumController {
 	
 	@Autowired
-	private AlbumService albumService;
+	private AlbumInitializer albumInitializer;
 	
 	@RequestMapping(value = "/")
 	public String actionShowRoot(Model model) {
 		
-		model.addAttribute("activeFolder", "/");
+		if (albumInitializer.isRunning()) return "wait";
 		
-		Map<String, String> directoriesMap = albumService.getSubFolders();
-		if (directoriesMap.size() > 0) {
-			model.addAttribute("folders", directoriesMap);
-		}
+		Album album = Album.getInstance();
 		
-		return "album";
-	}
-	
-	@RequestMapping(value = "/folder/{path}")
-	public String actionShowFolder(Model model, @PathVariable String path) {
+		List<AlbumDirectory> folders = new ArrayList<>(album.getDirectoriesMap().values()).stream().filter(d -> d.getLabel() != null).sorted().collect(Collectors.toList());
+		model.addAttribute("folders", folders);
 		
-		String decodedPath = albumService.decodePath(path);
-		
-		String activeFolder = decodedPath.replace("/", " / ");
-		model.addAttribute("activeFolder", activeFolder);
-		
-		Map<String, String> pictures = albumService.getThumbsPaths(decodedPath);
-		if (pictures.size() > 0) {
-			model.addAttribute("pictures", pictures);
-		}
-		
-		Map<String, String> directoriesMap = albumService.getSubFolders(decodedPath);
-		if (directoriesMap.size() > 0) {
-			model.addAttribute("folders", directoriesMap);
-		}
+		model.addAttribute("randomPicture1", album.getRandomPicture());
+		model.addAttribute("randomPicture2", album.getRandomPicture());
+		model.addAttribute("randomPicture3", album.getRandomPicture());
 		
 		return "album";
 	}
 	
-	@RequestMapping(value = "/picture/{path}")
-	public String actionShowPicture(Model model, @PathVariable String path) {
+	@RequestMapping(value = "/folder/{id}")
+	public String actionShowFolder(Model model, @PathVariable Integer id) {
 		
-		String thumbPath = albumService.decodePath(path);
+		if (albumInitializer.isRunning()) return "wait";
 		
-		StringBuilder albumPath = new StringBuilder();
-		String[] thumbPathSplitted = path.split("@");
-		for (int i = 1; i < thumbPathSplitted.length-1; i++) {
-			if (albumPath.length() > 0) albumPath.append("@");
-			albumPath.append(thumbPathSplitted[i]);
-		}
-		model.addAttribute("albumPath", "/folder/" + albumPath.toString());
+		AlbumDirectory directory = Album.getInstance().getAlbumDirectory(id);
 		
-		String picturePath = thumbPath.replace("_thumb", "_mid");
-		model.addAttribute("picturePath", picturePath);
+		model.addAttribute("activeFolderPath", directory.getDirectoryPath());
 		
-		String downloadPath = thumbPath.replace("_thumb", "").replace("_mid", "");
-		model.addAttribute("downloadPath", downloadPath);
+		List<AlbumPicture> pictures = directory.getPictures();
+		model.addAttribute("pictures", pictures.size() > 0 ? pictures : null);
 		
-		String[] split = picturePath.split("/");
-		String pictureName = split[split.length-1];
-		model.addAttribute("pictureName", pictureName);
+		List<AlbumDirectory> subDirectories = directory.getSubDirectories();
+		model.addAttribute("folders", subDirectories.size() > 0 ? subDirectories : null);
 		
-		String[] priorAndNextPictures = albumService.getPriorAndNextPicturesPaths(albumService.decodePath(albumPath.toString()), pictureName.replace("_mid", ""));
+		return "album";
+	}
+	
+	@RequestMapping(value = "/picture/{id}")
+	public String actionShowPicture(Model model, @PathVariable Integer id) {
 		
-		String priorPicture = priorAndNextPictures[0];
-		if (priorPicture != null) {
-			model.addAttribute("priorPicture", "/picture/" + priorPicture);
-		}
+		if (albumInitializer.isRunning()) return "wait";
 		
-		String nextPicture = priorAndNextPictures[1];
-		if (nextPicture != null) {
-			model.addAttribute("nextPicture", "/picture/" + nextPicture);
-		}
-		
+		AlbumPicture picture = Album.getInstance().getAlbumPicture(id);
+		model.addAttribute("picture", picture);
 		
 		return "picture";
 	}
+	
+	@RequestMapping(value = "/download/{id}")
+	public void actionDownload(HttpServletResponse response, @PathVariable Integer id) throws IOException{
+		
+		AlbumPicture picture = Album.getInstance().getAlbumPicture(id);
+		
+		File file = new File(picture.getRealPath());
+		
+		String mimeType= URLConnection.guessContentTypeFromName(file.getName());
+        if(mimeType==null){
+            mimeType = "application/octet-stream";
+        }
+         
+        response.setContentType(mimeType);
+        response.setHeader("Content-Disposition", String.format("inline; filename=\"" + file.getName() +"\""));
+        response.setContentLength((int)file.length());
+ 
+        InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+ 
+        FileCopyUtils.copy(inputStream, response.getOutputStream());
+	}
+	
+	@RequestMapping(value = "/refresh")
+	public String actionRefresh() {
+		
+		if (albumInitializer.isRunning()) return "wait";
+		
+		new Thread(() -> albumInitializer.run()).start();
+		
+		return "wait";
+	}
+	
 
 }

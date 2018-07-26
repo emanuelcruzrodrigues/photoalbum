@@ -1,47 +1,62 @@
 package com.photoalbum.config;
 
-import java.util.Map;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.photoalbum.domain.Album;
+import com.photoalbum.domain.AlbumConstants;
+import com.photoalbum.domain.AlbumDirectory;
+import com.photoalbum.service.AlbumInitializer;
+
 @Configuration
 public class ApplicationConfiguration implements WebMvcConfigurer {
-
-	@Value("${normalize.files}")
-	private boolean normalize;
 	
-	@Value("${album.directories}")
-	private String albumDirectoriesAsString;
+	@Autowired
+	private AlbumInitializer albumInitializer;
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		
-		AlbumDirectories.addAll(albumDirectoriesAsString, normalize);
+		albumInitializer.run();
 		
-		Map<String, String> directoriesMap = AlbumDirectories.getDirectoriesMap();
-		for (String label : directoriesMap.keySet()) {
-			String url = "file:"; 
-					
-			String path = directoriesMap.get(label);
-			
+		List<AlbumDirectory> directories = new ArrayList<>(Album.getInstance().getDirectoriesMap().values());
+		
+		File thumbsDirectory = AlbumDirectories.getThumbsDirectory();
+		directories.add(new AlbumDirectory(AlbumConstants.LABEL_TEMPORARY_THUMBS, thumbsDirectory));
+		
+		File midImagesDirectory = AlbumDirectories.getMidImagesDirectory();
+		directories.add(new AlbumDirectory(AlbumConstants.LABEL_TEMPORARY_MID_QUALITY, midImagesDirectory));
+		
+		for (AlbumDirectory albumDirectory : directories) {
+			String label = albumDirectory.getLabel();
+			if (label == null) continue;
+
+			String url = "file:";
+
+			String path = albumDirectory.getRealPath();
+
 			path.replace("\\", "/");
-			
+
 			if (path.startsWith("/")) {
 				url += "//" + path;
-			}else {
+			} else {
 				url += path.replace(":/", "://");
 			}
-			
+
 			if (!url.endsWith("/")) {
 				url = url + "/";
 			}
+			
 			registry.addResourceHandler(String.format("/%s/**", label)).addResourceLocations(url);
 		}
 		
-//		registry.addResourceHandler("/pictures/**").addResourceLocations("file:///home/emanuel/Pictures/");
+		//example: registry.addResourceHandler("/pictures/**").addResourceLocations("file:///home/emanuel/Pictures/");
 		
 	}
 

@@ -9,16 +9,25 @@
 
 	<script th:src="@{/js/album.js}"></script>
 	
-	<div th:if="${activeFolder != '/'}" class="alert alert-primary" role="alert" th:text="'Active folder: ' + ${activeFolder}">
-	</div>
+	
+	<nav>
+		Active folder:
+		<ul class="pagination">
+			<li class="page-item"><a class="page-link" href="/">Home</a></li>
+			<th:block th:each="path : *{activeFolderPath}">
+				<li class="page-item"><a class="page-link"
+					th:href="${path.getLink()}" th:text="${path.name}"></a></li>
+			</th:block>
+		</ul>
+	</nav>
 	
 	<ul class="row first" th:if="*{pictures != null}">
 	
 		<th:block th:each="picture : *{pictures}">
 			<li>
 				<div class="marginal">
-					<a th:href="'/picture/' + ${picture.value}">
-                		<img th:alt="${picture.key}"  th:src="${#strings.replace(picture.value,'@','/')}" class="img-thumbnail" style="max-height:200px;height:auto;width:auto;"/>
+					<a th:href="${picture.getLink()}">
+                		<img th:alt="${picture.id}"  th:src="${picture.getThumb()}" class="img-thumbnail" style="max-height:200px;height:auto;width:auto;"/>
 					</a>
 				</div>
 			</li>
@@ -27,22 +36,27 @@
 	</ul>
 	
 	
-	<div th:if="*{folders != null}" class="alert alert-light" role="alert">
+	<div th:if="${folders != null}" class="alert alert-light" role="alert">
 		<h5>Folders</h5>
 	
 		<ul>
 			<th:block th:each="folder : *{folders}">
-				<li><a th:href="'/folder/' + ${folder.value}"><img src="/images/folder.png" th:text="${folder.key}" height="30px"/></a></li>
+				<li><a th:href="${folder.getLink()}"><img src="/images/folder.png" th:text="${folder.name}" height="30px"/></a></li>
 			</th:block>
 		</ul>
 	</div>
 	
 	<div class="alert alert-warning" role="alert" th:if="*{folders == null && pictures == null}">
-  		Ops ... this folder does not have any images or subfolders
-		<a href="javascript:history.back()" th:if="${activeFolder != '/'}">Go back</a>
+  		Empty folder
 	</div>
 	
-	 
+	<div th:if="${randomPicture1} != null" class="alert alert-light" role="alert">
+		<h5>Picture of the day</h5>
+			<a th:href="${randomPicture1.getLink()}">
+				<img th:alt="${randomPicture1.name}" th:src="${randomPicture1.getMidImage()}" class="img-thumbnail" style="max-height:300px;height:auto;width:auto;"/>
+			</a>
+	</div>
+	
 </div>
 
 

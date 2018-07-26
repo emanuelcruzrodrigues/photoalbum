@@ -14,10 +14,9 @@ import org.imgscalr.Scalr;
 
 public class ImageScaller {
 
-	public File scale(File originalFile, int maxWidth, String newFilePreffix) {
+	public File scale(File originalFile, int maxWidth, File destinationDir, String newFileName) {
 		
-		String newFileName = originalFile.getParentFile().getAbsolutePath() + "/" + newFilePreffix + originalFile.getName();
-		File newFile = new File(newFileName);
+		File newFile = new File(destinationDir.getAbsolutePath() + "/" + newFileName);
 		
 		if (newFile.exists()) return newFile;
 		
@@ -32,7 +31,7 @@ public class ImageScaller {
 			
 			writeToDisk(scaledImg, newFile, imageFormat);
 
-			LogManager.getLogger(getClass()).info(String.format("%s scalled",newFileName));
+			LogManager.getLogger(getClass()).info(String.format("%s scalled", newFile.getAbsolutePath()));
 			
 			return newFile;
 
