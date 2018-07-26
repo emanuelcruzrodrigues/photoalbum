@@ -74,6 +74,7 @@ public class AlbumInitializer {
 				}
 			} catch (Throwable e) {
 				LogManager.getLogger(getClass()).error(String.format("Error loading directory '%s'", directoryAsString));
+				e.printStackTrace();
 			}
 		}
 		
@@ -93,7 +94,10 @@ public class AlbumInitializer {
 				parentDirectory.addSubDirectory(directory);
 			}
 			
-			for (File subFile : file.listFiles()) {
+			File[] subFiles = file.listFiles();
+			if (subFiles == null) return;
+			
+			for (File subFile : subFiles) {
 				addToAlbum(null, subFile);
 			}
 			

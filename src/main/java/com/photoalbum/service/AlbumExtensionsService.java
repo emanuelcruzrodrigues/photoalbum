@@ -17,7 +17,10 @@ public class AlbumExtensionsService {
 	private List<String> extensions;
 	
 	public boolean isValidExtension(File file) {
-		return getPictureExtensions().contains(FileUtils.getFileExtension(file).toLowerCase());
+		String extension = FileUtils.getFileExtension(file);
+		if (extension == null) return false;
+		
+		return getPictureExtensions().contains(extension.toLowerCase());
 	}
 	
 	public List<String> getPictureExtensions() {
