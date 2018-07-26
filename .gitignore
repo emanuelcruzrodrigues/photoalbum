@@ -1,5 +1,6 @@
 /target/
 /logs/
+/PhotoAlbumTempDir/
 !.mvn/wrapper/maven-wrapper.jar
 
 ### STS ###

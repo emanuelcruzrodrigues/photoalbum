@@ -9,28 +9,28 @@
 
 	<script th:src="@{/js/picture.js}"></script>
 	
-	<img class="img-fluid img-thumbnail" th:alt="${pictureName}" th:title="${pictureName}"  th:src="${picturePath}" />
+	<img class="img-fluid img-thumbnail" th:alt="${picture.name}" th:title="${picture.name}"  th:src="${picture.getMidImage()}" />
 	
 	<div class="col-md-12 text-center marginal">
 		
 		<div class="btn-group" role="group">
 			<div class="btn-group mr-2" role="group">
-				<a th:if="${priorPicture} != null" th:href="${priorPicture}" class="btn btn-info" role="button">
+				<a th:if="${picture.getPriorPictureLink()} != null" th:href="${picture.getPriorPictureLink()}" class="btn btn-info" role="button">
 					<span class="glyphicon glyphicon-chevron-left"></span>
 				</a>
 			</div>
 			<div class="btn-group mr-2" role="group">
-				<a th:href="${albumPath}" class="btn btn-info" role="button">
+				<a th:href="${picture.getDirectoryLink()}" class="btn btn-info" role="button">
 					<span class="glyphicon glyphicon-th"></span>
 				</a>
 			</div>
 			<div class="btn-group mr-2" role="group">
-				<a th:href="${downloadPath}" class="btn btn-info" role="button">
+				<a th:href="${picture.getDownloadLink()}" class="btn btn-info" role="button">
 					<span class="glyphicon glyphicon-download-alt"></span>
 				</a>
 			</div>
 			<div class="btn-group mr-2" role="group">
-				<a th:if="${nextPicture} != null" th:href="${nextPicture}" class="btn btn-info" role="button">
+				<a th:if="${picture.getNextPictureLink()} != null" th:href="${picture.getNextPictureLink()}" class="btn btn-info" role="button">
 					<span class="glyphicon glyphicon-chevron-right"></span>
 				</a>
 			</div>
