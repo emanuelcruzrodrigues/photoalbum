@@ -22,7 +22,7 @@ public class ImageScaller {
 		
 		try {
 			
-			LogManager.getLogger(getClass()).info(String.format("Scalling %s with maxWidth %d", originalFile.getAbsolutePath(), maxWidth));
+			LogManager.getLogger(getClass()).debug(String.format("Scalling %s with maxWidth %d", originalFile.getAbsolutePath(), maxWidth));
 
 			BufferedImage image = ImageIO.read(originalFile);
 			BufferedImage scaledImg = scaleToWidth(image, maxWidth);
@@ -31,7 +31,7 @@ public class ImageScaller {
 			
 			writeToDisk(scaledImg, newFile, imageFormat);
 
-			LogManager.getLogger(getClass()).info(String.format("%s scalled", newFile.getAbsolutePath()));
+			LogManager.getLogger(getClass()).debug(String.format("%s scalled", newFile.getAbsolutePath()));
 			
 			return newFile;
 
@@ -56,16 +56,12 @@ public class ImageScaller {
 	}
 
 	public BufferedImage scaleToWidth(BufferedImage image, int maxWidth) {
+		if( image.getWidth() < maxWidth) return image;
+		
 		Integer targetHeight = image.getHeight();
 		BufferedImage scaledImg = Scalr.resize(image, Scalr.Method.QUALITY, Scalr.Mode.FIT_TO_WIDTH, maxWidth, targetHeight, Scalr.OP_ANTIALIAS);
+		
 		return scaledImg;
 	}
-
-	public BufferedImage scaleToHeight(BufferedImage image, int maxHeight) {
-		Integer targetWidth = image.getWidth();
-		BufferedImage scaledImg = Scalr.resize(image, Scalr.Method.QUALITY, Scalr.Mode.FIT_TO_HEIGHT, targetWidth, maxHeight, Scalr.OP_ANTIALIAS);
-		return scaledImg;
-	}
-	
 
 }

@@ -37,6 +37,7 @@ public class Album {
 	}
 	
 	public AlbumDirectory getAlbumDirectory(File file) {
+		if (file == null) return null;
 		return directoriesMap.get(file.getAbsolutePath().hashCode());
 	}
 	
