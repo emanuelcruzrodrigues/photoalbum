@@ -36,6 +36,10 @@ public class Album {
 		return directoriesMap;
 	}
 	
+	public Map<Integer, AlbumPicture> getPicturesMap() {
+		return picturesMap;
+	}
+	
 	public AlbumDirectory getAlbumDirectory(File file) {
 		if (file == null) return null;
 		return directoriesMap.get(file.getAbsolutePath().hashCode());
@@ -44,7 +48,7 @@ public class Album {
 	public void add(AlbumDirectory directory) {
 		directoriesMap.put(directory.getId(), directory);
 		priorPicture = null;
-		LogManager.getLogger(getClass()).info(String.format("Directory named '%s' located at '%s' added", directory.getName(), directory.getRealPath()));
+		LogManager.getLogger(getClass()).debug(String.format("Directory named '%s' located at '%s' added", directory.getName(), directory.getRealPath()));
 	}
 	
 	public void add(AlbumPicture picture) {
@@ -57,7 +61,7 @@ public class Album {
 		}
 		priorPicture = picture;
 		
-		LogManager.getLogger(getClass()).info(String.format("Picture named '%s' located at '%s' added", picture.getName(), picture.getRealPath()));
+		LogManager.getLogger(getClass()).info(String.format("Picture '%s' added", picture.getRealPath()));
 	}
 
 	public AlbumDirectory getAlbumDirectory(Integer id) {
@@ -73,6 +77,10 @@ public class Album {
 		
 		int idx = new Random().nextInt(picturesMap.size());
 		return new ArrayList<>(picturesMap.values()).get(idx);
+	}
+	
+	public void setPriorPicture(AlbumPicture priorPicture) {
+		this.priorPicture = priorPicture;
 	}
 	
 

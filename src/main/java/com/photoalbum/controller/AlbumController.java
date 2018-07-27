@@ -33,7 +33,10 @@ public class AlbumController {
 	@RequestMapping(value = "/")
 	public String actionShowRoot(Model model) {
 		
-		if (albumInitializer.isRunning()) return "wait";
+		if (albumInitializer.isRunning()) {
+			model.addAttribute("progress", albumInitializer.getProgress());
+			return "wait";
+		}
 		
 		Album album = Album.getInstance();
 		
@@ -50,7 +53,10 @@ public class AlbumController {
 	@RequestMapping(value = "/folder/{id}")
 	public String actionShowFolder(Model model, @PathVariable Integer id) {
 		
-		if (albumInitializer.isRunning()) return "wait";
+		if (albumInitializer.isRunning()) {
+			model.addAttribute("progress", albumInitializer.getProgress());
+			return "wait";
+		}
 		
 		AlbumDirectory directory = Album.getInstance().getAlbumDirectory(id);
 		
@@ -68,7 +74,10 @@ public class AlbumController {
 	@RequestMapping(value = "/picture/{id}")
 	public String actionShowPicture(Model model, @PathVariable Integer id) {
 		
-		if (albumInitializer.isRunning()) return "wait";
+		if (albumInitializer.isRunning()) {
+			model.addAttribute("progress", albumInitializer.getProgress());
+			return "wait";
+		}
 		
 		AlbumPicture picture = Album.getInstance().getAlbumPicture(id);
 		model.addAttribute("picture", picture);
@@ -98,12 +107,13 @@ public class AlbumController {
 	}
 	
 	@RequestMapping(value = "/refresh")
-	public String actionRefresh() {
+	public String actionRefresh(Model model) {
 		
-		if (albumInitializer.isRunning()) return "wait";
+		if (!albumInitializer.isRunning()) {
+			new Thread(() -> albumInitializer.run()).start();
+		}
 		
-		new Thread(() -> albumInitializer.run()).start();
-		
+		model.addAttribute("progress", albumInitializer.getProgress());
 		return "wait";
 	}
 	

@@ -1,8 +1,13 @@
 package com.photoalbum.service;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -10,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.photoalbum.config.AlbumDirectories;
 import com.photoalbum.domain.Album;
 import com.photoalbum.domain.AlbumDirectory;
+import com.photoalbum.domain.AlbumFileComparator;
 import com.photoalbum.domain.AlbumPicture;
 import com.photoalbum.tools.ImageScaller;
 
@@ -25,6 +31,8 @@ public class AlbumInitializer {
 	
 	@Value("${album.directories}")
 	private String albumDirectoriesAsString;
+
+	private double progress;
 	
 	public AlbumInitializer() {
 		this.album = Album.getInstance();
@@ -49,12 +57,19 @@ public class AlbumInitializer {
 	}
 
 	private synchronized void initializeAlbum() {
-		
+		progress = 0;
+		addAllPicturesToAlbum();
+		generateScalledImages();
+		progress = 100;
+	}
+
+	private void addAllPicturesToAlbum() {
 		album.clear();
 		
-		String[] directoriesArray = albumDirectoriesAsString.split(";");
+		Logger logger = LogManager.getLogger(getClass());
+		logger.info("--------Configuring album");
 		
-		LogManager.getLogger(getClass()).info("--------Configuring album");
+		String[] directoriesArray = albumDirectoriesAsString.split(";");
 		
 		for (String directoryAsString : directoriesArray) {
 			try {
@@ -65,20 +80,20 @@ public class AlbumInitializer {
 				
 				if(directory.exists()) {
 					
-					LogManager.getLogger(getClass()).info(String.format("Add directory named '%s' located at '%s'", label, directoryAsString));
+					logger.info(String.format("Add directory named '%s' located at '%s'", label, directoryAsString));
 					
 					addToAlbum(label, new File(url));
 					
 				}else {
-					LogManager.getLogger(getClass()).error(String.format("Directory '%s' could not be added", directoryAsString));
+					logger.error(String.format("Directory '%s' could not be added", directoryAsString));
 				}
 			} catch (Throwable e) {
-				LogManager.getLogger(getClass()).error(String.format("Error loading directory '%s'", directoryAsString));
+				logger.error(String.format("Error loading directory '%s'", directoryAsString));
 				e.printStackTrace();
 			}
 		}
 		
-		LogManager.getLogger(getClass()).info("--------Album configuration finished");
+		logger.info("--------Album configuration finished");
 	}
 
 	private void addToAlbum(String label, File file) {
@@ -97,9 +112,14 @@ public class AlbumInitializer {
 			File[] subFiles = file.listFiles();
 			if (subFiles == null) return;
 			
-			for (File subFile : subFiles) {
+			List<File> subFilesList = new ArrayList<>(Arrays.asList(subFiles));
+			Collections.sort(subFilesList, new AlbumFileComparator());
+			
+			for (File subFile : subFilesList) {
 				addToAlbum(null, subFile);
 			}
+			
+			album.setPriorPicture(null);
 			
 		}else {
 			if (!albumExtensions.isValidExtension(file)) return;
@@ -113,11 +133,34 @@ public class AlbumInitializer {
 			
 			album.add(picture);
 			
-			ImageScaller imageScaller = new ImageScaller();
-			imageScaller.scale(file, 300, AlbumDirectories.getThumbsDirectory(), picture.getId() + "." + picture.getExtension());
+		}
+	}
+	
+	private void generateScalledImages() {
+		Logger logger = LogManager.getLogger(getClass());
+		
+		ImageScaller imageScaller = new ImageScaller();
+		
+		List<AlbumPicture> pictures = new ArrayList<>(album.getPicturesMap().values());
+		
+		logger.info(String.format("--------Gerenate %d scalled images", pictures.size()));
+		
+		for (int i = 0; i < pictures.size(); i++) {
+			
+			AlbumPicture picture = pictures.get(i);
+			
+			File file = new File(picture.getRealPath());
+			
+			imageScaller.scale(file, 400, AlbumDirectories.getThumbsDirectory(), picture.getId() + "." + picture.getExtension());
 			imageScaller.scale(file, 1920, AlbumDirectories.getMidImagesDirectory(), picture.getId() + "." + picture.getExtension());
 			
+			if (i % 10 == 0) {
+				progress = (new Integer(i).doubleValue() / pictures.size()) * 100d; 
+				logger.info(String.format("Picture %d / %d (%.02f%%)", i, pictures.size(), progress));
+			}
 		}
+		
+		logger.info("--------All images scalled");
 	}
 	
 	public boolean isRunning() {
@@ -128,6 +171,8 @@ public class AlbumInitializer {
 		this.running = running;
 	}
 	
-	
+	public double getProgress() {
+		return progress;
+	}
 
 }
