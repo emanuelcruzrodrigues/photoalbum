@@ -4,28 +4,20 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.photoalbum.domain.Album;
 import com.photoalbum.domain.AlbumConstants;
 import com.photoalbum.domain.AlbumDirectory;
-import com.photoalbum.service.AlbumInitializer;
 
 @Configuration
 public class ApplicationConfiguration implements WebMvcConfigurer {
 	
-	@Autowired
-	private AlbumInitializer albumInitializer;
-
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		
-		albumInitializer.run();
-		
-		List<AlbumDirectory> directories = new ArrayList<>(Album.getInstance().getDirectoriesMap().values());
+		List<AlbumDirectory> directories = new ArrayList<>();
 		
 		File thumbsDirectory = AlbumDirectories.getThumbsDirectory();
 		directories.add(new AlbumDirectory(AlbumConstants.LABEL_TEMPORARY_THUMBS, thumbsDirectory));

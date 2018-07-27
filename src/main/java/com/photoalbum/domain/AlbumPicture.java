@@ -70,5 +70,18 @@ public class AlbumPicture extends FileWrapper{
 	public String getDownloadLink() {
 		return String.format("/download/%d", getId());
 	}
+	
+	public String getJson() {
+		String json = String.format("{\"id\" : \"%s\", \"name\" : \"%s\", \"midImage\" : \"%s\", \"priorId\" : \"%s\", \"nextId\" : \"%s\", \"downloadLink\" : \"%s\"}"
+				, getId().toString()
+				, getName()
+				, getMidImage()
+				, getPriorPicture() != null ? getPriorPicture().getId().toString() : null
+				, getNextPicture() != null ? getNextPicture().getId().toString() : null
+				, getDownloadLink()
+				);
+		
+		return json;
+	}
 
 }
