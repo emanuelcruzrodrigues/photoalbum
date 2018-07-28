@@ -22,7 +22,22 @@ ul {
   font-size: 12px;
   width: 100%;
   /* Set the fixed height of the footer here */
-  height: 30px;
-  line-height: 30px; /* Vertically center the text there */
+  height: 20px;
+  line-height: 20px; /* Vertically center the text there */
   background-color: #f5f5f5;
+}
+.modal-dialog-full {
+  width: 98%;
+  height: 92%;
+  padding: 0;
+  vertical-align: middle;
+}
+
+.modal-content-full {
+  height: 99%;
+  text-align: center;
+  vertical-align: middle;
+}
+.img-responsive {
+    max-height: calc(100vh - 225px);
 }

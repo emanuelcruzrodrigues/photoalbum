@@ -8,15 +8,19 @@
 <div th:fragment="mainContent">
 
 	<script type="text/javascript">    
-		setTimeout("window.open('/', '_self');", 1000);
+		setTimeout("window.open('/', '_self');", 10000);
 	</script>
 
-	<div class="alert alert-warning" role="alert" th:text="'Album is refreshing, please wait. Progress: ' + ${progress} + '%'">
+	<div class="alert alert-warning" role="alert" th:text="'Album is refreshing, please wait. Progress: ' + ${#numbers.formatDecimal(progress,1,2,'COMMA')} + '%'">
 	</div>
 	
 	<a href="/" class="btn btn-info" role="button"> 
 		<span class="glyphicon glyphicon-home"> Home</span>
 	</a>
+	
+	<br/>
+	
+	<img id="imgPicture" class="img-fluid img-responsive"  src="/images/loading.gif" />
 
 </div>
 

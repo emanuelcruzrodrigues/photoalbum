@@ -14,7 +14,7 @@ import org.imgscalr.Scalr;
 
 public class ImageScaller {
 
-	public File scale(File originalFile, int maxWidth, File destinationDir, String newFileName) {
+	public File scale(File originalFile, int maxWidth, int maxHeight, File destinationDir, String newFileName) {
 		
 		File newFile = new File(destinationDir.getAbsolutePath() + "/" + newFileName);
 		
@@ -25,7 +25,7 @@ public class ImageScaller {
 			LogManager.getLogger(getClass()).debug(String.format("Scalling %s with maxWidth %d", originalFile.getAbsolutePath(), maxWidth));
 
 			BufferedImage image = ImageIO.read(originalFile);
-			BufferedImage scaledImg = scaleToWidth(image, maxWidth);
+			BufferedImage scaledImg = image.getWidth() > image.getHeight() ? scaleToWidth(image, maxWidth) : scaleToHeight(image, maxHeight);
 			
 			String imageFormat = FileUtils.getFileExtension(originalFile);
 			
@@ -60,6 +60,15 @@ public class ImageScaller {
 		
 		Integer targetHeight = image.getHeight();
 		BufferedImage scaledImg = Scalr.resize(image, Scalr.Method.QUALITY, Scalr.Mode.FIT_TO_WIDTH, maxWidth, targetHeight, Scalr.OP_ANTIALIAS);
+		
+		return scaledImg;
+	}
+	
+	public BufferedImage scaleToHeight(BufferedImage image, int maxHeight) {
+		if( image.getHeight() < maxHeight) return image;
+		
+		Integer targetWidth = image.getWidth();
+		BufferedImage scaledImg = Scalr.resize(image, Scalr.Method.QUALITY, Scalr.Mode.FIT_TO_HEIGHT, targetWidth, maxHeight, Scalr.OP_ANTIALIAS);
 		
 		return scaledImg;
 	}

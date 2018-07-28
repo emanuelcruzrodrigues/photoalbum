@@ -1,11 +1,31 @@
+
 function actionShowPicture(image){
+	$("#imgPicture").attr('src', '/images/loading.gif');
+	preloadImage(image.midImage, function(){ $("#imgPicture").attr('src', image.midImage) });
+	
 	$("#tfPictureName").html(image.name);
-	$("#imgPicture").attr('src', image.midImage);
 	$("#btnDownloadPicture").attr('href', image.downloadLink);
 	$("#dialogPicture").modal('show');
 	
 	actionRefreshPictureLink(document.getElementById("btnPriorPicture"), image.priorId);
 	actionRefreshPictureLink(document.getElementById("btnNextPicture"), image.nextId);
+}
+
+function preloadImage(imgSrc, callback) {
+	var objImagePreloader = new Image();
+
+	objImagePreloader.src = imgSrc;
+	if (objImagePreloader.complete) {
+		callback();
+		objImagePreloader.onload = function() {
+		};
+	} else {
+		objImagePreloader.onload = function() {
+			callback();
+			objImagePreloader.onload = function() {
+			};
+		}
+	}
 }
 
 function actionRefreshPictureLink(btn, id){

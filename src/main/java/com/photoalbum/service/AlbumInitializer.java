@@ -151,11 +151,11 @@ public class AlbumInitializer {
 			
 			File file = new File(picture.getRealPath());
 			
-			imageScaller.scale(file, 400, AlbumDirectories.getThumbsDirectory(), picture.getId() + "." + picture.getExtension());
-			imageScaller.scale(file, 1920, AlbumDirectories.getMidImagesDirectory(), picture.getId() + "." + picture.getExtension());
+			imageScaller.scale(file, 400, 400, AlbumDirectories.getThumbsDirectory(), picture.getId() + "." + picture.getExtension());
+			imageScaller.scale(file, 1920, 1080, AlbumDirectories.getMidImagesDirectory(), picture.getId() + "." + picture.getExtension());
 			
+			progress = (new Integer(i).doubleValue() / pictures.size()) * 100d; 
 			if (i % 10 == 0) {
-				progress = (new Integer(i).doubleValue() / pictures.size()) * 100d; 
 				logger.info(String.format("Picture %d / %d (%.02f%%)", i, pictures.size(), progress));
 			}
 		}
