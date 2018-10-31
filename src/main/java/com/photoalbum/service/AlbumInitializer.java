@@ -69,7 +69,12 @@ public class AlbumInitializer {
 		Logger logger = LogManager.getLogger(getClass());
 		logger.info("--------Configuring album");
 		
-		String[] directoriesArray = albumDirectoriesAsString.split(";");
+		logger.info(String.format("directoriesString: '%s'", albumDirectoriesAsString));
+		
+		String[] directoriesArray = albumDirectoriesAsString.split(",");
+		
+		logger.info(String.format("directories: %s", Arrays.asList(directoriesArray).toString()));
+		logger.info(String.format("extensions: %s", albumExtensions.getPictureExtensions().toString()));
 		
 		for (String directoryAsString : directoriesArray) {
 			try {

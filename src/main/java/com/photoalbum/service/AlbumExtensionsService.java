@@ -25,7 +25,7 @@ public class AlbumExtensionsService {
 	
 	public List<String> getPictureExtensions() {
 		if (extensions == null) {
-			extensions = Arrays.asList(extensionsAsString.toLowerCase().split(";"));
+			extensions = Arrays.asList(extensionsAsString.toLowerCase().split(","));
 		}
 		return extensions;
 	}
